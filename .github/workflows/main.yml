@@ -3,12 +3,20 @@ name: Release Creation
 on:
   release:
     types: [published]
+  workflow_dispatch:
+    inputs:
+      tag:
+        description: 'Release tag to build and attach artifacts to (e.g. v9.2.0)'
+        required: true
+        type: string
 
 jobs:
   build:
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v3
+        with:
+          ref: ${{ github.event.release.tag_name || inputs.tag }}
 
       # Get Foundry CLI
       - name: Install FVTT CLI
@@ -39,9 +47,9 @@ jobs:
         with:
           files: "module.json"
         env:
-          version: ${{github.event.release.tag_name}}
+          version: ${{ github.event.release.tag_name || inputs.tag }}
           manifest: https://github.com/${{github.repository}}/releases/latest/download/module.json
-          download: https://github.com/${{github.repository}}/releases/download/${{github.event.release.tag_name}}/${{steps.moduleID.outputs.prop}}.zip
+          download: https://github.com/${{github.repository}}/releases/download/${{ github.event.release.tag_name || inputs.tag }}/${{steps.moduleID.outputs.prop}}.zip
 
       # Create a zip file with all files required by the system to add to the release
       - run: zip -r ./${{steps.moduleID.outputs.prop}}.zip apps/ assets/ css/ lang/ modules/ packs/ tables/ templates/ CHANGELOG.md LICENSE README.md module.json ${{steps.moduleID.outputs.prop}}.mjs
@@ -52,12 +60,12 @@ jobs:
         uses: ncipollo/release-action@v1.10.0
         with:
           allowUpdates: true # Set this to false if you want to prevent updating existing releases
-          name: ${{ github.event.release.name }}
+          name: ${{ github.event.release.name || inputs.tag }}
           # draft: ${{ github.event.release.unpublished }}
           # prerelease: ${{ github.event.release.prerelease }}
           token: ${{ secrets.GITHUB_TOKEN }}
           artifacts: "./module.json, ./${{steps.moduleID.outputs.prop}}.zip"
-          tag: ${{ github.event.release.tag_name }}
+          tag: ${{ github.event.release.tag_name || inputs.tag }}
           body: ${{ github.event.release.body }}
           generateReleaseNotes: true
           discussionCategory: "Announcements"

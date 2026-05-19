@@ -5,6 +5,8 @@ All notable changes to this project will be documented in this file.  The format
 
 ## Unreleased
 See [Issue Backlog](../../issues) and [Roadmap](../../milestones).
+- *Added* Foundry VTT v14 compatibility. Module manifest now declares verified support up to v14.
+- *Fixed* deprecated global `renderTemplate` call in advantage momentum dialog, replaced with `foundry.applications.handlebars.renderTemplate` (the global is removed in v14).
 - *Changed* Check Conditions macro [#344](https://github.com/Jagusti/fvtt-wfrp4e-gmtoolkit/pull/344) to
   - not prompt for Stunned condition checks. This is [now handled](https://redirect.github.com/moo-man/WFRP4e-FoundryVTT/pull/2507) by the system. 
   - report success and failure context in condition test results.

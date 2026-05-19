@@ -71,4 +71,3 @@ jobs:
           tag: ${{ github.event.release.tag_name || inputs.tag }}
           body: ${{ github.event.release.body }}
           generateReleaseNotes: true
-          discussionCategory: "Announcements"
